@@ -3,15 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Catalog</title>
+<title>Core Store - Product Catalog</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; min-height: 100vh; }
-
   .admin-toggle { display: flex; justify-content: flex-end; padding: 10px 16px 0; }
   .admin-btn { background: none; border: 1px dashed #ccc; color: #999; font-size: 12px; padding: 4px 12px; border-radius: 20px; cursor: pointer; }
   .admin-btn:hover { background: #f0f0f0; }
-
   .store-header { margin: 10px 16px; border-radius: 12px; overflow: hidden; border: 0.5px solid #e0e0e0; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
   .cover-area { width: 100%; height: 160px; position: relative; overflow: hidden; }
   .cover-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%); }
@@ -21,7 +19,6 @@
   .cover-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); opacity: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.25s; }
   .cover-area.editable:hover .cover-overlay { opacity: 1; }
   .cover-overlay span { color: white; font-size: 13px; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; }
-
   .profile-row { display: flex; align-items: flex-end; gap: 14px; padding: 0 1.25rem 1rem; margin-top: -36px; position: relative; }
   .logo-wrap { width: 72px; height: 72px; border-radius: 50%; border: 3px solid white; overflow: hidden; position: relative; flex-shrink: 0; }
   .logo-wrap.editable { cursor: pointer; }
@@ -37,9 +34,7 @@
   .stat-badges { display: flex; gap: 8px; margin-top: 6px; }
   .badge { background: #f0f0f0; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #666; }
   .badge.green { background: #e8f5ee; color: #2d7a4f; }
-
   .main { padding: 12px 16px; }
-
   .editor-controls { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
   .editor-controls input[type=text] { flex: 1; min-width: 160px; font-size: 14px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
   .editor-controls input:focus { border-color: #2d6a9f; }
@@ -47,13 +42,10 @@
   .add-btn:hover { background: #2d6a9f; }
   .download-btn { background: #2d6a9f; color: white; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; cursor: pointer; }
   .download-btn:hover { background: #1a3a5c; }
-
   .customer-controls { display: flex; gap: 8px; margin-bottom: 1rem; }
   .customer-controls input { flex: 1; font-size: 14px; padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
   .customer-controls input:focus { border-color: #2d6a9f; }
-
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-
   .card { background: white; border: 0.5px solid #e8e8e8; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .card-img { width: 100%; height: 150px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
   .card-img.editable { cursor: pointer; }
@@ -64,7 +56,6 @@
   .img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.38); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease; }
   .card-img.editable:hover .img-overlay { opacity: 1; }
   .img-overlay span { color: white; font-size: 12px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 12px; }
-
   .card-body { padding: 10px; }
   .code-row { display: flex; align-items: center; gap: 4px; margin-bottom: 5px; }
   .code-tag { font-size: 11px; color: #2d6a9f; background: #e8f0f8; padding: 2px 8px; border-radius: 10px; font-family: monospace; }
@@ -82,7 +73,6 @@
   .price-display.editable { cursor: pointer; }
   .price-display.editable:hover { background: #f5f5f5; }
   .inline-edit { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 2px 6px; font-size: 13px; font-family: 'Segoe UI', sans-serif; background: white; color: #333; outline: none; }
-
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
   .modal { background: white; border-radius: 12px; padding: 1.5rem; width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
   .modal h3 { font-size: 16px; margin-bottom: 4px; color: #1a1a2e; }
@@ -125,13 +115,13 @@
   </div>
   <div class="profile-row">
     <div class="logo-wrap" id="logoWrap">
-      <div class="logo-placeholder" id="logoPlaceholder">Y</div>
+      <div class="logo-placeholder" id="logoPlaceholder">C</div>
       <img id="logoImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;">
       <div class="logo-overlay"><span>📷</span></div>
       <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(event)">
     </div>
     <div class="store-info">
-      <div class="store-name-el" id="storeName" contenteditable="false" spellcheck="false" oninput="updateStoreName()">Your Store</div>
+      <div class="store-name-el" id="storeName" contenteditable="false" spellcheck="false" oninput="updateStoreName()">Core Store</div>
       <div class="store-sub">Product catalog</div>
       <div class="stat-badges">
         <div class="badge" id="totalBadge">28 products</div>
@@ -162,34 +152,35 @@ const PASS = 'CSss8635';
 const currency = '৳';
 let isEditor = false;
 let products = [
-  {id:'#2211817',name:'Smart LED Lamp',price:890,img:null},
-  {id:'#2211819',name:'Golden Leaf Frame',price:1000,img:null},
-  {id:'#2211820',name:'Circular Plant Stand',price:900,img:null},
-  {id:'#2211821',name:'Golden Flower Decor',price:840,img:null},
-  {id:'#2211822',name:'Leaf Ring Display',price:840,img:null},
-  {id:'#2211823',name:'Butterfly Wind Spinner',price:630,img:null},
-  {id:'#2211824',name:'Bird Garden Cage',price:650,img:null},
-  {id:'#2211825',name:'Tall Plant Pot',price:800,img:null},
-  {id:'#2211826',name:'X-Frame Stand',price:650,img:null},
-  {id:'#2211827',name:'Globe Cage Decor',price:700,img:null},
-  {id:'#2211828',name:'Brass Globe',price:650,img:null},
-  {id:'#2211829',name:'Bicycle Planter',price:800,img:null},
-  {id:'#2211830',name:'Gramophone Music Box',price:670,img:null},
-  {id:'#2211831',name:'Vintage Sewing Machine',price:850,img:null},
-  {id:'#2211832',name:'Bicycle Showpiece',price:800,img:null},
-  {id:'#2211833',name:'Red Telephone Booth',price:800,img:null},
-  {id:'#2211834',name:'Ferris Wheel Decor',price:500,img:null},
-  {id:'#2211835',name:'Red Postbox',price:800,img:null},
-  {id:'#2211836',name:'Oil Lamp Decor',price:299,img:null},
-  {id:'#2211837',name:'Vintage Alarm Clock',price:600,img:null},
-  {id:'#2211838',name:'Big Ben Tower',price:700,img:null},
-  {id:'#2211839',name:'Metal Bicycle Art',price:700,img:null},
-  {id:'#2211840',name:'Wooden Shop Frame',price:1950,img:null},
-  {id:'#2211841',name:'Blue Window Box',price:1350,img:null},
-  {id:'#2211842',name:'Mirror Art Decor',price:1200,img:null},
-  {id:'#2211845',name:'Hanging Plant Basket',price:450,img:null},
-  {id:'#2211843',name:'Wooden Windmill',price:1250,img:null},
-  {id:'#2211844',name:'Musician Figurine',price:650,img:null},
+  {id:'#2211817',name:'ZF18 Sensor Speaker & Mobile Stand with RGB Light',price:750,img:null},
+  {id:'#2211818',name:'',price:0,img:null},
+  {id:'#2211819',name:'Wide Metal Elegant Crystal Ball',price:850,img:null},
+  {id:'#2211820',name:'Round Metal Elegant Crystal Ball',price:800,img:null},
+  {id:'#2211821',name:'Wide Metal Golden Pata',price:700,img:null},
+  {id:'#2211822',name:'Round Metal Golden Pata',price:700,img:null},
+  {id:'#2211823',name:'Butterfly Metal Showpiece',price:550,img:null},
+  {id:'#2211824',name:'Planter With Hanging Globe And Bird',price:600,img:null},
+  {id:'#2211825',name:'Pata Plant',price:650,img:null},
+  {id:'#2211826',name:'Metal Geometric Air Plant',price:500,img:null},
+  {id:'#2211827',name:'Generic Cute Table Top Flower Decor',price:550,img:null},
+  {id:'#2211828',name:'Retro 3D Terrestrial Globe Brass Finish Decorative Showpiece',price:550,img:null},
+  {id:'#2211829',name:'Geometric Car Shaped Metal Flower Vase',price:650,img:null},
+  {id:'#2211830',name:'Gramophone Shaped Classic Vintage Music Box',price:600,img:null},
+  {id:'#2211831',name:'Vintage Mini Sewing Machine Shape Music Box Mechanical',price:800,img:null},
+  {id:'#2211832',name:'Creative Bike Design Planter',price:600,img:null},
+  {id:'#2211833',name:'Telephone Booth',price:600,img:null},
+  {id:'#2211834',name:'The London Eye',price:500,img:null},
+  {id:'#2211835',name:'Traditional Red Bangladesh Post Office Letter Box',price:700,img:null},
+  {id:'#2211836',name:'Hariken Candle Showpiece',price:300,img:null},
+  {id:'#2211837',name:'Twin Bell Table Clock - Loud Alarm',price:600,img:null},
+  {id:'#2211838',name:'Big Ben Clock Tower in London',price:650,img:null},
+  {id:'#2211839',name:'Antique Metal Bike Showpiece',price:560,img:null},
+  {id:'#2211840',name:'W-Key Holder',price:1549,img:null},
+  {id:'#2211841',name:'Window Mirror',price:1099,img:null},
+  {id:'#2211842',name:'Decorative Cloud Shaped Wall-mounted Mirror',price:650,img:null},
+  {id:'#2211845',name:'Wall Hanging Flower Round',price:400,img:null},
+  {id:'#2211843',name:'Tree House',price:999,img:null},
+  {id:'#2211844',name:'Wooden Motorbike',price:550,img:null},
 ];
 
 function handleAdminBtn(){if(isEditor)exitEditor();else{document.getElementById('modalBg').style.display='flex';setTimeout(()=>document.getElementById('passInput').focus(),100);}}
@@ -213,7 +204,7 @@ function triggerImg(idx){document.getElementById('fi'+idx).click();}
 function handleImg(e,idx){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{products[idx].img=ev.target.result;render();};r.readAsDataURL(f);}
 function handleCover(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('coverImg').src=ev.target.result;document.getElementById('coverImg').style.display='block';document.getElementById('coverPlaceholder').style.display='none';};r.readAsDataURL(f);}
 function handleLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('logoImg').src=ev.target.result;document.getElementById('logoImg').style.display='block';document.getElementById('logoPlaceholder').style.display='none';};r.readAsDataURL(f);}
-function updateStoreName(){const n=document.getElementById('storeName').textContent.trim();document.getElementById('logoPlaceholder').textContent=(n||'Y').charAt(0).toUpperCase();}
+function updateStoreName(){const n=document.getElementById('storeName').textContent.trim();document.getElementById('logoPlaceholder').textContent=(n||'C').charAt(0).toUpperCase();}
 function deleteProduct(idx){if(confirm('Delete "'+(products[idx].name||products[idx].id)+'"?')){products.splice(idx,1);render();}}
 function addProduct(){products.push({id:'#NEW000',name:'New Product',price:0,img:null});render();setTimeout(()=>{document.getElementById('productGrid').lastElementChild?.scrollIntoView({behavior:'smooth'});},100);}
 function downloadCSV(){const rows=[['Product Name','Product Code','Price','Currency']];products.forEach(p=>rows.push([p.name,p.id,p.price,currency]));const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='product_catalog.csv';a.click();}
