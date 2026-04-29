@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Catalog</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; min-height: 100vh; }
+
+  .admin-toggle { display: flex; justify-content: flex-end; padding: 10px 16px 0; }
+  .admin-btn { background: none; border: 1px dashed #ccc; color: #999; font-size: 12px; padding: 4px 12px; border-radius: 20px; cursor: pointer; }
+  .admin-btn:hover { background: #f0f0f0; }
+
+  .store-header { margin: 10px 16px; border-radius: 12px; overflow: hidden; border: 0.5px solid #e0e0e0; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .cover-area { width: 100%; height: 160px; position: relative; overflow: hidden; }
+  .cover-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a3a5c 0%, #2d6a9f 100%); }
+  .cover-area img.cover-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s ease; }
+  .cover-area.editable { cursor: pointer; }
+  .cover-area.editable:hover img.cover-img { transform: scale(1.04); }
+  .cover-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); opacity: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.25s; }
+  .cover-area.editable:hover .cover-overlay { opacity: 1; }
+  .cover-overlay span { color: white; font-size: 13px; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; }
+
+  .profile-row { display: flex; align-items: flex-end; gap: 14px; padding: 0 1.25rem 1rem; margin-top: -36px; position: relative; }
+  .logo-wrap { width: 72px; height: 72px; border-radius: 50%; border: 3px solid white; overflow: hidden; position: relative; flex-shrink: 0; }
+  .logo-wrap.editable { cursor: pointer; }
+  .logo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #1a3a5c, #2d6a9f); color: white; font-weight: 500; }
+  .logo-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.4); opacity: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
+  .logo-wrap.editable:hover .logo-overlay { opacity: 1; }
+  .logo-overlay span { color: white; font-size: 18px; }
+  .store-info { flex: 1; padding-bottom: 4px; }
+  .store-name-el { font-size: 18px; font-weight: 600; color: #1a1a2e; padding: 2px 6px; display: inline-block; border-radius: 4px; outline: none; }
+  .store-name-el[contenteditable="true"]:hover { background: #f0f0f0; cursor: text; }
+  .store-name-el[contenteditable="true"]:focus { background: #f0f0f0; border-bottom: 2px solid #2d6a9f; }
+  .store-sub { font-size: 13px; color: #888; margin-top: 2px; padding-left: 6px; }
+  .stat-badges { display: flex; gap: 8px; margin-top: 6px; }
+  .badge { background: #f0f0f0; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #666; }
+  .badge.green { background: #e8f5ee; color: #2d7a4f; }
+
+  .main { padding: 12px 16px; }
+
+  .editor-controls { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+  .editor-controls input[type=text] { flex: 1; min-width: 160px; font-size: 14px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+  .editor-controls input:focus { border-color: #2d6a9f; }
+  .add-btn { background: #1a3a5c; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; }
+  .add-btn:hover { background: #2d6a9f; }
+  .download-btn { background: #2d6a9f; color: white; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; cursor: pointer; }
+  .download-btn:hover { background: #1a3a5c; }
+
+  .customer-controls { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .customer-controls input { flex: 1; font-size: 14px; padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+  .customer-controls input:focus { border-color: #2d6a9f; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+
+  .card { background: white; border: 0.5px solid #e8e8e8; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card-img { width: 100%; height: 150px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .card-img.editable { cursor: pointer; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s ease; }
+  .card-img:hover img { transform: scale(1.18); }
+  .card-img .placeholder { font-size: 36px; transition: transform 0.35s ease; }
+  .card-img:hover .placeholder { transform: scale(1.18); }
+  .img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.38); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease; }
+  .card-img.editable:hover .img-overlay { opacity: 1; }
+  .img-overlay span { color: white; font-size: 12px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 12px; }
+
+  .card-body { padding: 10px; }
+  .code-row { display: flex; align-items: center; gap: 4px; margin-bottom: 5px; }
+  .code-tag { font-size: 11px; color: #2d6a9f; background: #e8f0f8; padding: 2px 8px; border-radius: 10px; font-family: monospace; }
+  .code-tag.editable { cursor: pointer; }
+  .code-tag.editable:hover { background: #d0e4f5; }
+  .del-btn { margin-left: auto; width: 20px; height: 20px; border: none; background: none; cursor: pointer; color: #bbb; font-size: 16px; line-height: 1; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+  .del-btn:hover { background: #fee; color: #e74c3c; }
+  .name-display { font-size: 13px; color: #333; margin-bottom: 5px; padding: 2px 4px; border-radius: 4px; min-height: 20px; }
+  .name-display.editable { cursor: pointer; }
+  .name-display.editable:hover { background: #f5f5f5; }
+  .name-display.empty { color: #bbb; font-style: italic; }
+  .price-row { display: flex; align-items: center; gap: 4px; }
+  .currency-sym { font-size: 14px; color: #1a3a5c; font-weight: 600; }
+  .price-display { font-size: 16px; font-weight: 600; color: #1a3a5c; flex: 1; padding: 2px 4px; border-radius: 4px; }
+  .price-display.editable { cursor: pointer; }
+  .price-display.editable:hover { background: #f5f5f5; }
+  .inline-edit { width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 2px 6px; font-size: 13px; font-family: 'Segoe UI', sans-serif; background: white; color: #333; outline: none; }
+
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
+  .modal { background: white; border-radius: 12px; padding: 1.5rem; width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+  .modal h3 { font-size: 16px; margin-bottom: 4px; color: #1a1a2e; }
+  .modal p { font-size: 13px; color: #888; margin-bottom: 1rem; }
+  .modal input { width: 100%; font-size: 14px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; background: white; color: #333; font-family: 'Segoe UI', sans-serif; outline: none; margin-bottom: 8px; }
+  .modal input:focus { border-color: #2d6a9f; }
+  .modal-btns { display: flex; gap: 8px; }
+  .modal-ok { flex: 1; background: #1a3a5c; color: white; border: none; border-radius: 8px; padding: 8px; font-size: 13px; cursor: pointer; }
+  .modal-cancel { flex: 1; background: #f0f0f0; color: #333; border: none; border-radius: 8px; padding: 8px; font-size: 13px; cursor: pointer; }
+  .modal-error { font-size: 12px; color: #e74c3c; margin-bottom: 6px; display: none; }
+</style>
+</head>
+<body>
+
+<div class="modal-bg" id="modalBg" style="display:none;">
+  <div class="modal">
+    <h3>🔐 Editor Mode</h3>
+    <p>Password দিয়ে editor খোলো</p>
+    <input type="password" id="passInput" placeholder="Password..." onkeydown="if(event.key==='Enter')checkPass()" />
+    <div class="modal-error" id="passError">❌ ভুল password!</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-ok" onclick="checkPass()">প্রবেশ করো</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-toggle">
+  <button class="admin-btn" id="adminBtn" onclick="handleAdminBtn()">⚙️ Editor</button>
+</div>
+
+<div class="store-header">
+  <div class="cover-area" id="coverArea">
+    <div class="cover-placeholder" id="coverPlaceholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    </div>
+    <img class="cover-img" id="coverImg" src="" alt="" style="display:none;">
+    <div class="cover-overlay"><span>📷 Cover photo পরিবর্তন করো</span></div>
+    <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="handleCover(event)">
+  </div>
+  <div class="profile-row">
+    <div class="logo-wrap" id="logoWrap">
+      <div class="logo-placeholder" id="logoPlaceholder">Y</div>
+      <img id="logoImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;">
+      <div class="logo-overlay"><span>📷</span></div>
+      <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(event)">
+    </div>
+    <div class="store-info">
+      <div class="store-name-el" id="storeName" contenteditable="false" spellcheck="false" oninput="updateStoreName()">Your Store</div>
+      <div class="store-sub">Product catalog</div>
+      <div class="stat-badges">
+        <div class="badge" id="totalBadge">28 products</div>
+        <div class="badge green">Active</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div id="editorControls" style="display:none;">
+    <div class="editor-controls">
+      <input type="text" id="editorSearch" placeholder="Search by name or code..." oninput="render()" />
+      <button class="add-btn" onclick="addProduct()">+ Add product</button>
+      <button class="download-btn" onclick="downloadCSV()">Download CSV ↓</button>
+    </div>
+  </div>
+  <div id="customerControls">
+    <div class="customer-controls">
+      <input type="text" id="customerSearch" placeholder="🔍 Search products..." oninput="render()" />
+    </div>
+  </div>
+  <div class="grid" id="productGrid"></div>
+</div>
+
+<script>
+const PASS = 'CSss8635';
+const currency = '৳';
+let isEditor = false;
+let products = [
+  {id:'#2211817',name:'Smart LED Lamp',price:890,img:null},
+  {id:'#2211819',name:'Golden Leaf Frame',price:1000,img:null},
+  {id:'#2211820',name:'Circular Plant Stand',price:900,img:null},
+  {id:'#2211821',name:'Golden Flower Decor',price:840,img:null},
+  {id:'#2211822',name:'Leaf Ring Display',price:840,img:null},
+  {id:'#2211823',name:'Butterfly Wind Spinner',price:630,img:null},
+  {id:'#2211824',name:'Bird Garden Cage',price:650,img:null},
+  {id:'#2211825',name:'Tall Plant Pot',price:800,img:null},
+  {id:'#2211826',name:'X-Frame Stand',price:650,img:null},
+  {id:'#2211827',name:'Globe Cage Decor',price:700,img:null},
+  {id:'#2211828',name:'Brass Globe',price:650,img:null},
+  {id:'#2211829',name:'Bicycle Planter',price:800,img:null},
+  {id:'#2211830',name:'Gramophone Music Box',price:670,img:null},
+  {id:'#2211831',name:'Vintage Sewing Machine',price:850,img:null},
+  {id:'#2211832',name:'Bicycle Showpiece',price:800,img:null},
+  {id:'#2211833',name:'Red Telephone Booth',price:800,img:null},
+  {id:'#2211834',name:'Ferris Wheel Decor',price:500,img:null},
+  {id:'#2211835',name:'Red Postbox',price:800,img:null},
+  {id:'#2211836',name:'Oil Lamp Decor',price:299,img:null},
+  {id:'#2211837',name:'Vintage Alarm Clock',price:600,img:null},
+  {id:'#2211838',name:'Big Ben Tower',price:700,img:null},
+  {id:'#2211839',name:'Metal Bicycle Art',price:700,img:null},
+  {id:'#2211840',name:'Wooden Shop Frame',price:1950,img:null},
+  {id:'#2211841',name:'Blue Window Box',price:1350,img:null},
+  {id:'#2211842',name:'Mirror Art Decor',price:1200,img:null},
+  {id:'#2211845',name:'Hanging Plant Basket',price:450,img:null},
+  {id:'#2211843',name:'Wooden Windmill',price:1250,img:null},
+  {id:'#2211844',name:'Musician Figurine',price:650,img:null},
+];
+
+function handleAdminBtn(){if(isEditor)exitEditor();else{document.getElementById('modalBg').style.display='flex';setTimeout(()=>document.getElementById('passInput').focus(),100);}}
+function checkPass(){if(document.getElementById('passInput').value===PASS){closeModal();enterEditor();}else{document.getElementById('passError').style.display='block';document.getElementById('passInput').value='';}}
+function closeModal(){document.getElementById('modalBg').style.display='none';document.getElementById('passInput').value='';document.getElementById('passError').style.display='none';}
+function enterEditor(){isEditor=true;document.getElementById('adminBtn').textContent='✅ Editor — Exit';document.getElementById('editorControls').style.display='';document.getElementById('customerControls').style.display='none';const ca=document.getElementById('coverArea');ca.classList.add('editable');ca.onclick=()=>document.getElementById('coverInput').click();const lw=document.getElementById('logoWrap');lw.classList.add('editable');lw.onclick=()=>document.getElementById('logoInput').click();document.getElementById('storeName').contentEditable='true';render();}
+function exitEditor(){isEditor=false;document.getElementById('adminBtn').textContent='⚙️ Editor';document.getElementById('editorControls').style.display='none';document.getElementById('customerControls').style.display='';const ca=document.getElementById('coverArea');ca.classList.remove('editable');ca.onclick=null;const lw=document.getElementById('logoWrap');lw.classList.remove('editable');lw.onclick=null;document.getElementById('storeName').contentEditable='false';render();}
+function getQ(){return isEditor?document.getElementById('editorSearch').value.toLowerCase():document.getElementById('customerSearch').value.toLowerCase();}
+function render(){
+  document.getElementById('totalBadge').textContent=products.length+' products';
+  const q=getQ();
+  const filtered=products.filter(p=>p.id.toLowerCase().includes(q)||p.name.toLowerCase().includes(q));
+  if(isEditor){
+    document.getElementById('productGrid').innerHTML=filtered.map(p=>{const idx=products.indexOf(p);return`<div class="card"><div class="card-img editable" onclick="triggerImg(${idx})">${p.img?`<img src="${p.img}" alt="">`:'<span class="placeholder">📦</span>'}<div class="img-overlay"><span>Upload photo</span></div><input type="file" accept="image/*" id="fi${idx}" style="display:none" onchange="handleImg(event,${idx})"></div><div class="card-body"><div class="code-row"><span class="code-tag editable" onclick="event.stopPropagation();startEdit('id',${idx},this)">${p.id}</span><button class="del-btn" onclick="deleteProduct(${idx})">×</button></div><div class="name-display editable ${p.name?'':'empty'}" onclick="startEdit('name',${idx},this)">${p.name||'Click to add name'}</div><div class="price-row"><span class="currency-sym">${currency}</span><div class="price-display editable" onclick="startEdit('price',${idx},this)">${p.price.toLocaleString()}</div></div></div></div>`;}).join('');
+  }else{
+    document.getElementById('productGrid').innerHTML=filtered.map(p=>`<div class="card"><div class="card-img">${p.img?`<img src="${p.img}" alt="">`:'<span class="placeholder">📦</span>'}</div><div class="card-body"><div class="code-row"><span class="code-tag">${p.id}</span></div><div class="name-display">${p.name||'—'}</div><div class="price-row"><span class="currency-sym">${currency}</span><div class="price-display">${p.price.toLocaleString()}</div></div></div></div>`).join('');
+  }
+}
+function startEdit(field,idx,el){const p=products[idx];const val=field==='price'?p.price:p[field];const input=document.createElement('input');input.className='inline-edit';input.value=val;input.type=field==='price'?'number':'text';if(field==='id'){input.style.fontFamily='monospace';input.style.fontSize='11px';}el.replaceWith(input);input.focus();input.select();const save=()=>{if(field==='price')products[idx].price=parseInt(input.value)||0;else products[idx][field]=input.value;render();};input.onblur=save;input.onkeydown=e=>{if(e.key==='Enter')save();if(e.key==='Escape')render();};}
+function triggerImg(idx){document.getElementById('fi'+idx).click();}
+function handleImg(e,idx){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{products[idx].img=ev.target.result;render();};r.readAsDataURL(f);}
+function handleCover(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('coverImg').src=ev.target.result;document.getElementById('coverImg').style.display='block';document.getElementById('coverPlaceholder').style.display='none';};r.readAsDataURL(f);}
+function handleLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('logoImg').src=ev.target.result;document.getElementById('logoImg').style.display='block';document.getElementById('logoPlaceholder').style.display='none';};r.readAsDataURL(f);}
+function updateStoreName(){const n=document.getElementById('storeName').textContent.trim();document.getElementById('logoPlaceholder').textContent=(n||'Y').charAt(0).toUpperCase();}
+function deleteProduct(idx){if(confirm('Delete "'+(products[idx].name||products[idx].id)+'"?')){products.splice(idx,1);render();}}
+function addProduct(){products.push({id:'#NEW000',name:'New Product',price:0,img:null});render();setTimeout(()=>{document.getElementById('productGrid').lastElementChild?.scrollIntoView({behavior:'smooth'});},100);}
+function downloadCSV(){const rows=[['Product Name','Product Code','Price','Currency']];products.forEach(p=>rows.push([p.name,p.id,p.price,currency]));const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='product_catalog.csv';a.click();}
+render();
+</script>
+</body>
+</html>
