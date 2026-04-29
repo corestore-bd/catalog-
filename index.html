@@ -1,3 +1,8 @@
+bash
+
+cat /home/claude/index.html
+Output
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -198,4 +203,10 @@ function handleImg(e,idx){const f=e.target.files[0];if(!f)return;const r=new Fil
 function handleCover(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('coverImg').src=ev.target.result;document.getElementById('coverImg').style.display='block';document.getElementById('coverPlaceholder').style.display='none';};r.readAsDataURL(f);}
 function handleLogo(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{document.getElementById('logoImg').src=ev.target.result;document.getElementById('logoImg').style.display='block';document.getElementById('logoPlaceholder').style.display='none';};r.readAsDataURL(f);}
 function updateStoreName(){const n=document.getElementById('storeName').textContent.trim();document.getElementById('logoPlaceholder').textContent=(n||'C').charAt(0).toUpperCase();}
-function deleteProduct
+function deleteProduct(idx){if(confirm('Delete "'+(products[idx].name||products[idx].id)+'"?')){products.splice(idx,1);render();}}
+function addProduct(){products.push({id:'#NEW000',name:'New Product',price:0,img:null});render();setTimeout(()=>{document.getElementById('productGrid').lastElementChild?.scrollIntoView({behavior:'smooth'});},100);}
+function downloadCSV(){const rows=[['Product Name','Product Code','Price','Currency']];products.forEach(p=>rows.push([p.name,p.id,p.price,currency]));const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='product_catalog.csv';a.click();}
+render();
+</script>
+</body>
+</html>
